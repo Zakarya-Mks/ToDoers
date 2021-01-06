@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDoers</title>
+
+    <link rel="stylesheet" href="./reset.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+      integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"
+      crossorigin="anonymous"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="./img/icon.png" type="image/x-icon" />
+  </head>
+  <body>
+    <div class="container-fluid px-0">
+      <div class="top_nav d-flex justify-content-between align-items-center">
+        <div class="nav_left">
+          <button class="border-0 bg-transparent" id="menu_btn">
+            <svg class="invert" width="24" height="24" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                fill-rule="evenodd"
+                d="M4.5 5h15a.5.5 0 1 1 0 1h-15a.5.5 0 0 1 0-1zm0 6h15a.5.5 0 1 1 0 1h-15a.5.5 0 1 1 0-1zm0 6h15a.5.5 0 1 1 0 1h-15a.5.5 0 1 1 0-1z"
+              ></path>
+            </svg>
+          </button>
+          <button class="border-0 bg-transparent" id="home_btn">
+            <svg class="invert" width="24" height="24" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M12.527 3.075c.35.104.64.263 1.27.876L19.1 9.123c.374.364.49.505.601.678.11.174.185.351.232.552.042.178.062.34.066.742L20 17.718c0 .446-.046.607-.134.77a.906.906 0 01-.378.378c-.163.088-.324.134-.77.134H14v-4.718c0-.446-.046-.607-.134-.77a.906.906 0 00-.378-.378c-.142-.077-.284-.122-.616-.132L12.718 13h-1.436c-.446 0-.607.046-.77.134a.906.906 0 00-.378.378c-.077.142-.122.284-.132.616l-.002.154V19H5.282c-.446 0-.607-.046-.77-.134a.906.906 0 01-.378-.378c-.088-.163-.134-.324-.134-.77v-6.462c0-.522.02-.703.067-.903.047-.2.121-.378.232-.552l.077-.113c.098-.134.233-.282.524-.565l5.304-5.172c.629-.613.92-.772 1.269-.876a1.82 1.82 0 011.054 0zm-.286.958a.825.825 0 00-.482 0c-.18.054-.326.139-.63.418l-.227.216L5.598 9.84c-.3.293-.385.39-.456.5a.76.76 0 00-.102.242c-.026.112-.037.224-.04.531l.002 6.807.005.073.074.006L8.999 18 9 14.268l.003-.17c.013-.448.083-.749.249-1.058a1.9 1.9 0 01.788-.788c.306-.164.6-.234 1.043-.249l.199-.003h1.45l.17.003c.448.013.749.083 1.058.249.337.18.608.45.788.788.164.306.234.6.249 1.043l.003.199L14.999 18l3.92-.002.073-.006.006-.073.002-.2v-6.615l-.005-.218a1.494 1.494 0 00-.035-.305.747.747 0 00-.102-.242l-.059-.084a3.571 3.571 0 00-.294-.315l-5.407-5.273c-.425-.414-.604-.545-.798-.615l-.06-.019z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <div class="nav_right">
+          <button
+            class="border-0 bg-transparent"
+            id="add_btn"
+            data-toggle="modal"
+            data-target="#newTaskModal"
+          >
+            <svg class="invert" width="24" height="24" viewBox="0 0 24 24">
+              <g fill="none" fill-rule="evenodd" transform="translate(4 3)">
+                <mask id="jd4FBg" fill="#fff">
+                  <path
+                    d="M9 8h7a.5.5 0 1 1 0 1H9v7a.5.5 0 1 1-1 0V9H1a.5.5 0 0 1 0-1h7V1a.5.5 0 0 1 1 0v7z"
+                  ></path>
+                </mask>
+                <g mask="url(#jd4FBg)">
+                  <path fill="currentColor" d="M-4-3h24v24H-4z"></path>
+                </g>
+              </g>
+            </svg>
+          </button>
+          <button class="border-0 bg-transparent" id="completedTasks">
+            <img
+              class="invert"
+              width="24"
+              height="24"
+              src="https://www.flaticon.com/svg/static/icons/svg/2413/2413745.svg"
+              alt="Calendar"
+              title="Calendar"
+            />
+          </button>
+        </div>
+      </div>
+      <div class="left_menu d-flex flex-column pt-4 pl-5">
+        <ul class="pl-0 mb-0" id="projectsMainList">
+          <li class="my-2 py-1 selected" data-designation="inboxProjects">
+            <span class="mr-2">
+              <svg class="inbox" width="24" height="24" viewBox="0 0 24 24">
+                <g fill="currentColor" fill-rule="nonzero">
+                  <path
+                    d="M10 14.5a2 2 0 104 0h5.5V18a1.5 1.5 0 01-1.5 1.5H6A1.5 1.5 0 014.5 18v-3.5H10z"
+                    opacity="0.1"
+                  ></path>
+                  <path
+                    d="M8.062 4h7.876a2 2 0 011.94 1.515l2.062 8.246a2 2 0 01.06.485V18a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.754a2 2 0 01.06-.485l2.06-8.246A2 2 0 018.061 4zm0 1a1 1 0 00-.97.757L5.03 14.004a1 1 0 00-.03.242V18a1 1 0 001 1h12a1 1 0 001-1v-3.754a1 1 0 00-.03-.242l-2.06-8.247A1 1 0 0015.94 5H8.061zM12 17.25A2.75 2.75 0 019.295 15H7a.5.5 0 110-1h2.75a.5.5 0 01.5.5 1.75 1.75 0 003.5 0 .5.5 0 01.5-.5H17a.5.5 0 110 1h-2.295A2.75 2.75 0 0112 17.25z"
+                  ></path>
+                </g>
+              </svg>
+            </span>
+            <span>Inbox</span>
+          </li>
+          <li class="my-2 py-1" data-designation="todayProjects">
+            <span class="mr-1"
+              ><svg class="day" width="24" height="24" viewBox="0 0 24 24">
+                <g fill="currentColor" fill-rule="evenodd">
+                  <path
+                    fill-rule="nonzero"
+                    d="M6 4.5h12A1.5 1.5 0 0 1 19.5 6v2.5h-15V6A1.5 1.5 0 0 1 6 4.5z"
+                    opacity=".1"
+                  ></path>
+                  <path
+                    fill-rule="nonzero"
+                    d="M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H6zm1 3h10a.5.5 0 1 1 0 1H7a.5.5 0 0 1 0-1z"
+                  ></path>
+                  <text
+                    font-family="-apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"
+                    font-size="9"
+                    transform="translate(4 2)"
+                    font-weight="500"
+                  >
+                    <tspan
+                      x="8"
+                      y="15"
+                      text-anchor="middle"
+                      id="todayDate"
+                    ></tspan>
+                  </text>
+                </g>
+              </svg>
+            </span>
+            <span> Today </span>
+          </li>
+          <li
+            class="mt-2 py-1 _arrow rotate_arrow"
+            data-toggle="collapse"
+            data-target="#collapseOne"
+            id="projects"
+          >
+            <span class="mr-1"
+              ><svg class="project" width="24" height="24" viewBox="0 0 24 24">
+                <g fill="currentColor" fill-rule="nonzero">
+                  <path
+                    d="M6 4.5h12A1.5 1.5 0 0119.5 6v2.5h-15V6A1.5 1.5 0 016 4.5z"
+                    opacity="0.1"
+                  ></path>
+                  <path
+                    d="M6 4h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2zm0 1a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V6a1 1 0 00-1-1H6zm10 12a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm8-4a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zm-4 0a1 1 0 110-2 1 1 0 010 2zM7 8h10a.5.5 0 110 1H7a.5.5 0 010-1z"
+                  ></path>
+                </g>
+              </svg>
+            </span>
+            <span> Projects </span>
+          </li>
+          <div class="accordion" id="accordionExample">
+            <div
+              id="collapseOne"
+              class="collapse show"
+              aria-labelledby="headingOne"
+              data-parent="#accordionExample"
+            >
+              <ul class="d-flex flex-column pl-4" id="projects_list">
+                <li>
+                  <button
+                    class="bg-transparent border-0 d-flex py-1 px-2"
+                    data-toggle="modal"
+                    data-target="#newProjectModal"
+                  >
+                    <span
+                      class="d-flex align-items-center justify-content-center rounded-circle"
+                      ><svg
+                        class="invert"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                      >
+                        <g
+                          fill="none"
+                          fill-rule="evenodd"
+                          transform="translate(4 3)"
+                        >
+                          <mask id="jd4FBg" fill="#fff">
+                            <path
+                              d="M9 8h7a.5.5 0 1 1 0 1H9v7a.5.5 0 1 1-1 0V9H1a.5.5 0 0 1 0-1h7V1a.5.5 0 0 1 1 0v7z"
+                            ></path>
+                          </mask>
+                          <g mask="url(#jd4FBg)">
+                            <path
+                              fill="currentColor"
+                              d="M-4-3h24v24H-4z"
+                            ></path>
+                          </g>
+                        </g>
+                      </svg>
+                    </span>
+                    New Project
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </ul>
+      </div>
+
+      <div class="editor">
+        <div class="container d-flex flex-column px-0 pt-2 px-lg-5 pt-5">
+          <div class="heading px-4 p-2 px-lg-2">
+            <div class="h3 mb-0" id="editorTitle">
+              <span class="text-capitalize"></span>
+            </div>
+          </div>
+          <div class="content px-3 pt-2" id="editorContent">
+            <!--  -->
+            <!-- HERE GOES THE TASKS -->
+            <!--  -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="newTaskModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="model-Title">New Task</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="modale-body">
+              <form class="needs-validation" id="addTaskForm" novalidate>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label for="taskTitle">Title: </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="taskTitle"
+                        maxlength="30"
+                        required
+                      />
+                      <div class="invalid-feedback">Task title is required</div>
+                    </div>
+                    <div class="form-group">
+                      <label for="taskDescription">Description: </label>
+                      <textarea
+                        class="form-control"
+                        id="taskDescription"
+                        rows="4"
+                        required
+                      ></textarea>
+                      <div class="invalid-feedback">
+                        Task description is required
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label for="taskDueDate">Due Date: </label>
+                      <input
+                        type="datetime-local"
+                        class="form-control"
+                        id="taskDueDate"
+                        max="2030-01-01T00:00"
+                        required
+                      />
+                      <div class="invalid-feedback">Due date is required</div>
+                    </div>
+                    <div class="form-group">
+                      <label for="taskPriority">Priority: </label>
+                      <select class="custom-select" id="taskPriority" required>
+                        <option value="low" selected>Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                      <div class="invalid-feedback">Priority required</div>
+                    </div>
+                    <div class="form-group">
+                      <label for="taskProject">Project: </label>
+                      <select
+                        class="custom-select"
+                        id="taskProject"
+                        required
+                      ></select>
+                      <div class="invalid-feedback">Project required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group mb-0 d-flex justify-content-end">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary mr-1"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="submit" class="btn" id="modale_addTask_btn">
+                    Add Task
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="editTaskModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="model-Title">Edit Task</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="modale-body">
+              <form class="needs-validation" id="editTaskForm" novalidate>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label for="oldtaskTitle">Title: </label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="oldtaskTitle"
+                        maxlength="30"
+                        required
+                      />
+                      <div class="invalid-feedback">Task title is required</div>
+                    </div>
+                    <div class="form-group">
+                      <label for="oldtaskDescription">Description: </label>
+                      <textarea
+                        class="form-control"
+                        id="oldtaskDescription"
+                        rows="4"
+                        required
+                      ></textarea>
+                      <div class="invalid-feedback">
+                        Task description is required
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label for="oldtaskDueDate">Due Date: </label>
+                      <input
+                        type="datetime-local"
+                        class="form-control"
+                        id="oldtaskDueDate"
+                        required
+                      />
+                      <div class="invalid-feedback">Due date is required</div>
+                    </div>
+                    <div class="form-group">
+                      <label for="oldtaskPriority">Priority: </label>
+                      <select
+                        class="custom-select"
+                        id="oldtaskPriority"
+                        required
+                      >
+                        <option value="low" selected>Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </select>
+                      <div class="invalid-feedback">Priority required</div>
+                    </div>
+                    <div class="form-group">
+                      <label for="oldtaskProject">Project: </label>
+                      <select
+                        class="custom-select"
+                        id="oldtaskProject"
+                        required
+                      >
+                        <option value="inbox" selected>Inbox</option>
+                      </select>
+                      <div class="invalid-feedback">Project required</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group mb-0 d-flex justify-content-end">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary mr-1"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="submit" class="btn" id="modale_editTask_btn">
+                    Update Task
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="newProjectModal">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="model-Title">New Project</h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="modale-body">
+              <form class="needs-validation" id="newProjectForm" novalidate>
+                <div class="form-group">
+                  <label for="taskTitle">Name: </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="projectName"
+                    maxlength="20"
+                    required
+                  />
+                  <div class="invalid-feedback">Project name is required</div>
+                </div>
+                <div class="form-group mb-0 d-flex justify-content-end">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary mr-1"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="submit" class="btn" id="modale_addProject_btn">
+                    Add Project
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript"></script>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
