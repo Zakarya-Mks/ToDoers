@@ -1,0 +1,48 @@
+@mixin pointer {
+  cursor: pointer;
+}
+
+@mixin b-radius-3px {
+  border-radius: 3px;
+}
+
+@mixin customScrollBar($width) {
+  &::-webkit-scrollbar-track {
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar {
+    width: $width;
+    background-color: #f5f5f5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $theme_color;
+    border: 2px solid lighten($color: $theme_color, $amount: 5%);
+    border-radius: 10px;
+  }
+}
+
+@mixin addBreakPont($screenSize) {
+  @if ($screenSize == 'xs') {
+    @media screen and (max-width: 320px) {
+      @content;
+    }
+  } @else if($screenSize == 'sm') {
+    @media screen and (min-width: 576px) {
+      @content;
+    }
+  } @else if($screenSize == 'md') {
+    @media screen and (min-width: 768px) {
+      @content;
+    }
+  } @else if($screenSize == 'lg') {
+    @media screen and (min-width: 992px) {
+      @content;
+    }
+  } @else if($screenSize == 'xl') {
+    @media screen and (min-width: 1200px) {
+      @content;
+    }
+  }
+}

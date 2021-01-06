@@ -1,0 +1,367 @@
+@import 'variables';
+@import 'mixins';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+.top_nav {
+  background-color: $theme_color;
+  height: 44px;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  .invert {
+    filter: invert(100%);
+  }
+
+  button {
+    @include b-radius-3px;
+    padding: 2.5px 5px;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:hover {
+      @include pointer;
+      background-color: $hover-color !important;
+    }
+  }
+
+  @include addBreakPont('md') {
+    padding-left: 42px;
+    padding-right: 42px;
+  }
+}
+
+.left_menu {
+  height: calc(100vh - 44px);
+  width: 305px;
+  position: absolute;
+  z-index: 999;
+  background-color: darken($color: #fafafa, $amount: 1%);
+  transform: translateX(-305px);
+  transition: transform 0.3s ease;
+
+  .inbox {
+    color: #246fe0;
+  }
+
+  .day {
+    color: #058527;
+  }
+
+  .project {
+    color: #692fc2;
+  }
+
+  ._arrow {
+    position: relative;
+
+    &::after {
+      display: inline-block;
+      content: '';
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      transition: transform 0.3s ease;
+      transform: translateY(-50%);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+
+    &.rotate_arrow {
+      &::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        transform: rotateX(180deg) translateY(50%);
+      }
+    }
+  }
+
+  li {
+    @include b-radius-3px;
+    margin-right: 10px;
+
+    &.selected {
+      font-weight: 500;
+      color: #000 !important;
+    }
+  }
+
+  li:hover {
+    @include pointer;
+    background-color: lighten($color: #fafafa, $amount: 100%);
+  }
+
+  #projects_list {
+    max-height: 65vh;
+    overflow-y: auto;
+
+    @include customScrollBar(2px);
+
+    @include addBreakPont('md') {
+      max-height: 80vh;
+    }
+
+    li {
+      margin: 2px 10px 2px 5px;
+      padding: 2px 0 2px 1.3rem;
+      text-transform: capitalize;
+      font-size: 15px;
+      color: lighten($color: #000000, $amount: 30%);
+      position: relative;
+
+      &::before {
+        position: absolute;
+        left: 5px;
+        top: 0;
+        bottom: 0;
+        margin-top: auto;
+        margin-bottom: auto;
+        content: '';
+        display: flex;
+        width: 10px;
+        height: 10px;
+        background-color: currentColor;
+        border-radius: 50%;
+        background-color: #b8b8b8;
+      }
+    }
+
+    li:last-child {
+      padding: 2px 0 2px 0;
+
+      &::before {
+        display: none;
+      }
+
+      button {
+        font-size: 0.9rem;
+        color: lighten($color: #000000, $amount: 30%);
+
+        padding: 5px 10px;
+        @include b-radius-3px;
+
+        span {
+          margin-right: 0.5rem;
+          padding: 1px;
+        }
+
+        &:hover {
+          color: $theme_color !important;
+
+          span {
+            background: $theme_color;
+            color: #fff;
+          }
+        }
+
+        &:focus {
+          outline: none;
+        }
+      }
+
+      &:hover {
+        cursor: default;
+        background-color: transparent;
+      }
+    }
+  }
+
+  &.toggle {
+    transform: translateX(0);
+  }
+
+  @include addBreakPont('md') {
+    transform: translateX(0);
+
+    &.toggle {
+      transform: translateX(-305px);
+    }
+  }
+}
+.editor {
+  transition: margin 0.3s ease;
+
+  .container {
+    height: calc(100vh - 44px);
+    max-height: calc(100vh - 44px);
+
+    .heading {
+      span {
+        color: lighten($color: #000000, $amount: 25%);
+      }
+    }
+  }
+
+  .content {
+    overflow-y: auto;
+    height: calc(100vh - 44px);
+
+    @include customScrollBar(4px);
+
+    & > div {
+      transition: max-height 0.3s ease !important;
+      max-height: 1000px !important;
+
+      &.hideTask {
+        max-height: 0 !important;
+        overflow: hidden !important;
+      }
+
+      .task {
+        @include b-radius-3px;
+        border: solid 1px transparent;
+        border-bottom: 1px solid #f0f0f0;
+
+        * {
+          @include pointer;
+        }
+
+        .task-controls {
+          display: flex;
+          flex-direction: row;
+
+          span {
+            color: grey;
+            padding: 2px 2px;
+            @include b-radius-3px;
+            display: flex;
+            justify-content: center;
+
+            &:hover {
+              background-color: #eee;
+              color: #202020;
+            }
+
+            &:focus {
+              outline: none;
+            }
+          }
+        }
+
+        @include addBreakPont('md') {
+          border-bottom: 1px solid #f0f0f0;
+
+          &:hover {
+            @include pointer;
+            .task-controls {
+              visibility: visible;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @include addBreakPont('md') {
+    margin-left: 320px;
+
+    &.toggle {
+      margin-left: 0;
+    }
+  }
+}
+
+#newTaskModal {
+  #modale_addTask_btn {
+    background-color: $theme_color !important;
+    color: #fff;
+  }
+
+  select,
+  option {
+    text-transform: capitalize;
+  }
+}
+
+#editTaskModal {
+  #modale_editTask_btn {
+    background-color: $theme_color !important;
+    color: #fff;
+  }
+
+  select,
+  option {
+    text-transform: capitalize;
+  }
+}
+
+#newProjectModal {
+  #modale_addProject_btn {
+    background-color: $theme_color !important;
+    color: #fff;
+  }
+
+  #newTask_addProjectBtn {
+    border: solid 1px $theme_color !important;
+    background: red !important;
+  }
+}
+
+[id*='changeProjectPopover'],
+[id*='changePriorityPopOver'] {
+  max-height: 300px;
+  overflow-y: auto;
+
+  @include customScrollBar(2px);
+
+  @include addBreakPont('md') {
+    max-height: 40vh;
+  }
+
+  li {
+    padding: 2px 0 2px 0.6rem;
+    @include b-radius-3px;
+    border: solid 1px transparent;
+    text-transform: capitalize;
+    min-width: 100px;
+
+    &:hover {
+      @include pointer;
+      border: solid 1px $theme_color;
+    }
+
+    &.selected {
+      background-color: $theme_color;
+      color: #fff;
+    }
+  }
+}
+
+// hide tooltip on small screens
+.tooltip {
+  display: none !important;
+
+  @include addBreakPont('md') {
+    display: inline !important;
+  }
+}
+
+.toast {
+  position: absolute;
+  bottom: 20px;
+  right: 50%;
+  transform: translateX(50%);
+  z-index: 999;
+
+  button {
+    color: $theme_color;
+    font-weight: 500;
+
+    &:hover {
+      background-color: rgba(219, 76, 63, 0.1) !important;
+      @include b-radius-3px;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
