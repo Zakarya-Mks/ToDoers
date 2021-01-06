@@ -1,4 +1,5 @@
-## ToDoers for those who do!
+### ToDoers
+##### for those who do!
 My take on a ToDoList Online App
 
 ## features
