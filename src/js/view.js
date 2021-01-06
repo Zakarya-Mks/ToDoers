@@ -432,13 +432,16 @@ const _creatTaskNode = function (task) {
   const taskDiv = domHelpers.createElementWithClass('div', [
     'task',
     'd-flex',
-    'flex-column',
-    'flex-sm-row',
     'justify-content-between',
     'py-2',
     'px-2',
     'mx-2',
   ]);
+
+  task.title.length > 10
+    ? taskDiv.classList.add('flex-column', 'flex-sm-row')
+    : undefined;
+
   taskDiv.id = `task${task.id}`;
 
   const taskDivLeftSection = domHelpers.createElementWithClass('div', [
@@ -479,6 +482,10 @@ const _creatTaskNode = function (task) {
 
   //insert task name
   taskDivLeftSectionLabel.textContent = task.title;
+  task.title.length > 25
+    ? (taskDivLeftSectionLabel.textContent =
+        task.title.substring(0, 23) + '...')
+    : undefined;
 
   formCheck.append(taskDivLeftSectionInput, taskDivLeftSectionLabel);
 
