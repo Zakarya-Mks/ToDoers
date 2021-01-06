@@ -433,22 +433,18 @@ const _creatTaskNode = function (task) {
     'task',
     'd-flex',
     'justify-content-between',
+    'align-items-center',
     'py-2',
     'px-2',
     'mx-2',
   ]);
 
-  task.title.length > 10
-    ? taskDiv.classList.add('flex-column', 'flex-sm-row')
-    : undefined;
-
   taskDiv.id = `task${task.id}`;
 
   const taskDivLeftSection = domHelpers.createElementWithClass('div', [
     'task-left',
-    'align-self-start',
-    'align-self-sm-baseline',
   ]);
+  taskDivLeftSection.setAttribute('data-TargetTaskLeft', `task${task.id}`);
 
   const formCheck = domHelpers.createElementWithClass('div', [
     'form-check',
@@ -476,15 +472,19 @@ const _creatTaskNode = function (task) {
     'form-check-label'
   );
   taskDivLeftSectionLabel.for = task.id;
-  domHelpers.setAttributes(taskDivLeftSectionLabel, {
-    for: 'check' + task.id,
-  });
 
   //insert task name
-  taskDivLeftSectionLabel.textContent = task.title;
-  task.title.length > 25
+  // adjust phone title on displays
+  window.screen.availWidth >= 320 && task.title.length > 10
     ? (taskDivLeftSectionLabel.textContent =
-        task.title.substring(0, 23) + '...')
+        task.title.substring(0, 12) + '...')
+    : (taskDivLeftSectionLabel.textContent = task.title);
+  window.screen.availWidth >= 400 && task.title.length > 20
+    ? (taskDivLeftSectionLabel.textContent =
+        task.title.substring(0, 20) + '...')
+    : undefined;
+  window.screen.availWidth >= 768
+    ? (taskDivLeftSectionLabel.textContent = task.title)
     : undefined;
 
   formCheck.append(taskDivLeftSectionInput, taskDivLeftSectionLabel);
@@ -495,8 +495,6 @@ const _creatTaskNode = function (task) {
 
   const taskDivControls = domHelpers.createElementWithClass('div', [
     'task-controls',
-    'align-self-end',
-    'align-self-sm-baseline',
   ]);
 
   const taskDivControlsEditSpan = document.createElement('span');

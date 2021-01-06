@@ -219,13 +219,21 @@ document.addEventListener('click', (e) => {
   }
 
   // collapse task details
-  if (e.target.tagName == 'DIV' && e.target.id.includes('task_')) {
-    const target = document.querySelector(`#collapseT${e.target.id.substr(1)}`);
+  if (
+    (e.target.tagName == 'DIV' && e.target.id.includes('task_')) ||
+    (e.target.closest('div[data-TargetTaskLeft^="task"]') &&
+      e.target.tagName != 'INPUT')
+  ) {
+    const targetTask = e.target.closest('div[id^="task_"]');
+    // e.target.id.substr(1) to remove the small t in task id and replace it with T
+    const target = document.querySelector(
+      `#collapseT${targetTask.id.substr(1)}`
+    );
 
     if (target.classList.contains('show')) {
-      $(`#collapseT${e.target.id.substr(1)}`).collapse('hide');
+      $(`#collapseT${targetTask.id.substr(1)}`).collapse('hide');
     } else {
-      $(`#collapseT${e.target.id.substr(1)}`).collapse('show');
+      $(`#collapseT${targetTask.id.substr(1)}`).collapse('show');
     }
   }
   //click project dropdown menu
