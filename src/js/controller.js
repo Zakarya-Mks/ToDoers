@@ -3,6 +3,13 @@ import { Task } from './task';
 import { Project } from './project';
 import * as domElement from './domCollection';
 
+// prevent text selection on double click
+document.addEventListener('mousedown', (event) => {
+  if (event.detail > 1) {
+    event.preventDefault();
+  }
+});
+
 window.addEventListener('load', () => {
   //load all task and projects to ui
   pubSub.publish('getAllTasksForUI', null);
@@ -127,6 +134,12 @@ domElement.newProjectForm.addEventListener('submit', (event) => {
 // change current displayed project
 domElement.projectsMainList.addEventListener('click', (e) => {
   if (e.target.closest('li[id*="project_"]')) {
+    // hide menu on phone when project licked
+    if (window.screen.availWidth < 768) {
+      document.querySelector('.editor').classList.toggle('toggle');
+      domElement.leftMainMenu.classList.toggle('toggle');
+    }
+
     pubSub.publish(
       'displayProjectTasks',
       e.target.closest('li').id.substr(e.target.closest('li').id.indexOf('_'))
