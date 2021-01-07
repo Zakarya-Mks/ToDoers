@@ -42,23 +42,6 @@ window.addEventListener('load', () => {
     .setAttribute('min', new Date().toISOString().split('T')[0] + 'T00:00');
 });
 
-//add task
-domElement.newTaskForm.addEventListener('submit', (event) => {
-  //bootstrap validation first then publish new event
-  if (domElement.newTaskForm.checkValidity() === false) {
-    event.preventDefault();
-    event.stopPropagation();
-    domElement.newTaskForm.classList.add('was-validated');
-  } else {
-    event.preventDefault();
-    event.stopPropagation();
-
-    _createNewTask();
-    $('#newTaskModal').modal('hide');
-    pubSub.publish('clearFormFields', domElement.newTaskForm);
-  }
-});
-
 //open close menu
 domElement.mainMenuBtn.addEventListener('click', (e) => {
   document.querySelector('.editor').classList.toggle('toggle');
@@ -83,6 +66,23 @@ domElement.homeButtonMenu.addEventListener('click', (e) => {
         .classList.remove('selected')
     : undefined;
   inboxListItem.classList.toggle('selected');
+});
+
+//add task
+domElement.newTaskForm.addEventListener('submit', (event) => {
+  //bootstrap validation first then publish new event
+  if (domElement.newTaskForm.checkValidity() === false) {
+    event.preventDefault();
+    event.stopPropagation();
+    domElement.newTaskForm.classList.add('was-validated');
+  } else {
+    event.preventDefault();
+    event.stopPropagation();
+
+    _createNewTask();
+    $('#newTaskModal').modal('hide');
+    pubSub.publish('clearFormFields', domElement.newTaskForm);
+  }
 });
 
 //update task
@@ -121,9 +121,31 @@ domElement.newProjectForm.addEventListener('submit', (event) => {
     event.preventDefault();
     event.stopPropagation();
     domElement.newProjectForm.classList.add('was-validated');
+    document.querySelector('#newProjectModal .invalid-feedback').textContent =
+      'Project name is required';
+  } else if (
+    ['today', 'inbox'].includes(
+      domElement.newProjectFromFields.name.value.toLowerCase()
+    )
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+    domElement.newProjectFromFields.name.classList.add('is-invalid');
+
+    // capitalize the project name
+    const capitalizedName =
+      domElement.newProjectFromFields.name.value.charAt(0).toUpperCase() +
+      domElement.newProjectFromFields.name.value.slice(1);
+
+    // display custom invalid message
+    document.querySelector(
+      '#newProjectModal .invalid-feedback'
+    ).textContent = `${capitalizedName} is a reserved project name`;
   } else {
     event.preventDefault();
     event.stopPropagation();
+
+    domElement.newProjectFromFields.name.classList.remove('is-invalid');
 
     _createProject();
     $('#newProjectModal').modal('hide');
