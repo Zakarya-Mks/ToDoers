@@ -21,7 +21,7 @@ export class Project {
 
   set name(value) {
     if (value) {
-      this._name = value;
+      this._name = value.toLowerCase();
     }
   }
 

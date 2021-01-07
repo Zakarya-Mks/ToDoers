@@ -192,6 +192,7 @@ function fillNewTaskPrjLst(projectsArr) {
     if (project.name != 'today') {
       const option = document.createElement('option');
       option.textContent = project.name;
+      option.setAttribute('data-newTaskTargetProject', project.id);
       domElement.newTaskFormFields.project.append(option);
     }
   });
@@ -211,8 +212,10 @@ function fillEditTaskPrjLst([projectsArr, selectedProject]) {
 }
 
 function removeTaskFromUi(taskID) {
-  const targetNode = document.querySelector(`#task${taskID}`);
-  targetNode.parentNode.removeChild(targetNode);
+  try {
+    const targetNode = document.querySelector(`#task${taskID}`);
+    targetNode.parentNode.removeChild(targetNode);
+  } catch (err) {}
 }
 
 function displayProject(project) {
@@ -336,27 +339,27 @@ function _getPriorityList(task) {
   return ul;
 }
 
-function fillProjectPopoverWithData([
-  projectsNamesArr,
-  taskID,
-  taskProjectName,
-]) {
+function fillProjectPopoverWithData([projectsInfoArr, taskID, taskProjectID]) {
   $(`#projectPopover${taskID}`).popover({
     container: 'body',
-    content: _getProjectsList(projectsNamesArr, taskID, taskProjectName),
+    content: _getProjectsList(projectsInfoArr, taskID, taskProjectID),
     html: true,
   });
 }
 
-function _getProjectsList(pNamesArr, tID, pName) {
+function _getProjectsList(projectInfos, taskID, selectedPID) {
   const ul = domHelpers.createElementWithClass('ul', ['pl-0', 'mb-0', 'pr-2']);
-  ul.id = `changeProjectPopover${tID}`;
+  ul.id = `changeProjectPopover${taskID}`;
 
-  const namesArr = pNamesArr.filter((pName) => pName != 'today');
-
-  domHelpers.creatListItems(namesArr, ul, 'my-1');
+  const resultArr = projectInfos.filter((project) => project.name != 'today');
+  const namesArr = resultArr.map((projectObj) => projectObj.name);
+  const idsArr = resultArr.map((projectObj) => projectObj.id);
+  domHelpers.creatListItems(namesArr, ul, 'my-1', {
+    name: 'data-popoverTargetProjectId',
+    attrData: idsArr,
+  });
   [...ul.children].forEach((li) => {
-    if (li.textContent.toLowerCase() == pName) {
+    if (li.getAttribute('data-popoverTargetProjectId') == selectedPID) {
       li.classList.add('selected');
     }
   });
@@ -365,16 +368,16 @@ function _getProjectsList(pNamesArr, tID, pName) {
 }
 
 function updateProjectPopoverWithData([
-  projectsNamesArr,
+  projectsInfoArr,
   taskID,
-  taskProjectName,
+  taskProjectID,
 ]) {
   document.querySelector(
     `#changeProjectPopover${taskID}`
   ).innerHTML = _getProjectsList(
-    projectsNamesArr,
+    projectsInfoArr,
     taskID,
-    taskProjectName
+    taskProjectID
   ).innerHTML;
 }
 

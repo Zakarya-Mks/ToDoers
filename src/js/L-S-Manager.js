@@ -87,14 +87,14 @@ function completeTask(taskId) {
   _writeToLS('completedTasks', completedTasks);
 }
 
-function saveTaskToLS({ task, projectName }) {
+function saveTaskToLS({ task, projectID }) {
   tasksArr.push(task);
   _writeToLS('allTasks', tasksArr);
 
   //add taskId to appropriate project tasksList
 
   projectArr.forEach((project) => {
-    if (project.name == projectName) {
+    if (project.id == projectID) {
       project.projectTasks = task.id;
     }
   });
@@ -164,10 +164,12 @@ function updateTask([taskID, taskObj]) {
 }
 
 function editTaskProject([taskID, newProjectName]) {
+  newProjectName = newProjectName.toLowerCase();
   projectArr.forEach((project) => {
     if (
       project.projectTasks.includes(taskID) &&
-      project.name != newProjectName
+      project.name != newProjectName &&
+      project.name != 'today'
     ) {
       project.projectTasks.splice(project.projectTasks.indexOf(taskID), 1);
     } else if (
@@ -181,32 +183,33 @@ function editTaskProject([taskID, newProjectName]) {
 }
 
 function getDataToProjectPopover(taskID) {
-  const taskProjectName = projectArr.filter((project) =>
+  const taskProjectID = projectArr.filter((project) =>
     project.projectTasks.includes(taskID)
   );
-  const projectsNamesArr = projectArr.map((project) => {
-    return project.name;
+  const projectsInfoArr = projectArr.map((project) => {
+    return { id: project.id, name: project.name };
   });
-
   pubSub.publish('projectPopoverData', [
-    projectsNamesArr,
+    projectsInfoArr,
     taskID,
-    taskProjectName[0].name,
+    taskProjectID[0].id,
   ]);
 }
 
 function getProjectsToProjectPopover(taskID) {
-  const taskProjectName = projectArr.filter((project) =>
-    project.projectTasks.includes(taskID)
-  );
-  const projectsNamesArr = projectArr.map((project) => {
-    return project.name;
+  const taskProjectID = projectArr.filter((project) => {
+    if (project.projectTasks.includes(taskID) && project.name != 'today') {
+      return project;
+    }
+  });
+  const projectsInfoArr = projectArr.map((project) => {
+    return { id: project.id, name: project.name };
   });
 
   pubSub.publish('updateProjectPopoverData', [
-    projectsNamesArr,
+    projectsInfoArr,
     taskID,
-    taskProjectName[0].name,
+    taskProjectID[0].id,
   ]);
 }
 

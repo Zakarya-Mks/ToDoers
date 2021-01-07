@@ -16,10 +16,18 @@ export class DomHelperFunctions {
     return domElement;
   }
 
-  static creatListItems(innerElmArr, ulElement, listItemClass) {
+  static creatListItems(
+    innerElmArr,
+    ulElement,
+    listItemClass,
+    attributes = null
+  ) {
     for (let index = 0; index < innerElmArr.length; index++) {
       const listItem = document.createElement('li');
       listItemClass ? listItem.classList.add(listItemClass) : '';
+      attributes
+        ? listItem.setAttribute(attributes.name, attributes.attrData[index])
+        : '';
 
       if (Array.isArray(innerElmArr[index])) {
         innerElmArr[index].forEach((element) => {

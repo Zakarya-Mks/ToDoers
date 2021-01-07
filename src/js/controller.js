@@ -20,11 +20,11 @@ window.addEventListener('load', () => {
     domElement.todayProjectListItem,
   ]);
 
-  //auto select inbox project on load
-  const inboxProjectID = domElement.inboxProjectListItem.id.substr(
-    domElement.inboxProjectListItem.id.indexOf('_')
+  //auto select today project on load
+  const todayProjectID = domElement.todayProjectListItem.id.substr(
+    domElement.todayProjectListItem.id.indexOf('_')
   );
-  pubSub.publish('displayProjectTasks', inboxProjectID);
+  pubSub.publish('displayProjectTasks', todayProjectID);
 
   // set calender min due Date  to current day
   document
@@ -58,9 +58,10 @@ domElement.mainMenuBtn.addEventListener('click', (e) => {
   domElement.leftMainMenu.classList.toggle('toggle');
 });
 
+// home button open todays tasks
 domElement.homeButtonMenu.addEventListener('click', (e) => {
   const inboxListItem = document.querySelector(
-    'li[data-designation="inboxProjects"]'
+    'li[data-designation="todayProjects"]'
   );
 
   pubSub.publish(
@@ -100,7 +101,9 @@ domElement.editTaskForm.addEventListener('submit', (event) => {
       },
     ]);
     $('#editTaskModal').modal('hide');
-    pubSub.publish('displayProjectTasks', _getSelectedProjectID());
+    if (_getSelectedProjectID()) {
+      pubSub.publish('displayProjectTasks', _getSelectedProjectID());
+    }
     pubSub.publish('clearFormFields', domElement.editTaskForm);
   }
 });
@@ -201,7 +204,9 @@ document.addEventListener('click', (e) => {
       taskID,
       e.target.textContent.toLowerCase(),
     ]);
-    pubSub.publish('displayProjectTasks', _getSelectedProjectID());
+    if (_getSelectedProjectID()) {
+      pubSub.publish('displayProjectTasks', _getSelectedProjectID());
+    }
   }
 
   // click delete task
@@ -309,12 +314,22 @@ function _createNewTask() {
     domElement.newTaskFormFields.priority.value
   );
 
+  console.log(
+    domElement.newTaskFormFields.project[
+      domElement.newTaskFormFields.project.selectedIndex
+    ].getAttribute('data-newTaskTargetProject')
+  );
+
   pubSub.publish('saveTask', {
     task,
-    projectName: domElement.newTaskFormFields.project.value,
+    projectID: domElement.newTaskFormFields.project[
+      domElement.newTaskFormFields.project.selectedIndex
+    ].getAttribute('data-newTaskTargetProject'),
   });
 
-  pubSub.publish('displayProjectTasks', _getSelectedProjectID());
+  if (_getSelectedProjectID()) {
+    pubSub.publish('displayProjectTasks', _getSelectedProjectID());
+  }
 }
 
 function _createProject() {
@@ -328,5 +343,7 @@ function _getSelectedProjectID() {
   const selectedProject = document.querySelector(
     '#projectsMainList li.selected'
   );
-  return selectedProject.id.substr(selectedProject.id.indexOf('_'));
+  return selectedProject
+    ? selectedProject.id.substr(selectedProject.id.indexOf('_'))
+    : null;
 }
