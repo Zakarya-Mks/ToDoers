@@ -221,9 +221,8 @@ document.addEventListener('click', (e) => {
 
   //click change project button
   if (e.target.closest('span[id*="projectPopover"]')) {
-    const taskID = e.target
-      .closest('span')
-      .id.substr(e.target.closest('span').id.indexOf('_'));
+    const clickedSpan = e.target.closest('span[id*="projectPopover"]');
+    const taskID = clickedSpan.id.substr(clickedSpan.id.indexOf('_'));
     pubSub.publish('editProjectPopover', taskID);
   }
 

@@ -183,12 +183,15 @@ function editTaskProject([taskID, newProjectName]) {
 }
 
 function getDataToProjectPopover(taskID) {
-  const taskProjectID = projectArr.filter((project) =>
-    project.projectTasks.includes(taskID)
-  );
+  const taskProjectID = projectArr.filter((project) => {
+    if (project.name != 'today') {
+      return project;
+    }
+  });
   const projectsInfoArr = projectArr.map((project) => {
     return { id: project.id, name: project.name };
   });
+
   pubSub.publish('projectPopoverData', [
     projectsInfoArr,
     taskID,
