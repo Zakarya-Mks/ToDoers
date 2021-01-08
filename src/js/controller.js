@@ -33,7 +33,7 @@ window.addEventListener('load', () => {
   );
   pubSub.publish('displayProjectTasks', todayProjectID);
 
-  // set calender min due Date  to current day
+  // set calender min due Date  to current day for both new task and edit task forms
   document
     .querySelector('#taskDueDate')
     .setAttribute('min', new Date().toISOString().split('T')[0] + 'T00:00');
@@ -60,13 +60,18 @@ domElement.homeButtonMenu.addEventListener('click', (e) => {
   );
 
   //remove if already selected and add selected class to clicked node
+  _removeCurrentSelection();
+  inboxListItem.classList.toggle('selected');
+});
+
+//remove selection from all li items in left menu ul
+function _removeCurrentSelection() {
   document.querySelector('li.selected')
     ? document
         .querySelector('.left_menu li.selected')
         .classList.remove('selected')
     : undefined;
-  inboxListItem.classList.toggle('selected');
-});
+}
 
 //add task
 domElement.newTaskForm.addEventListener('submit', (event) => {
@@ -85,6 +90,7 @@ domElement.newTaskForm.addEventListener('submit', (event) => {
   }
 });
 
+//!-- updated this to work with the project id instead of project name thing
 //update task
 domElement.editTaskForm.addEventListener('submit', (event) => {
   //bootstrap validation first then publish new event
@@ -104,7 +110,9 @@ domElement.editTaskForm.addEventListener('submit', (event) => {
         description: domElement.editTaskFormFields.description.value,
         dueDate: domElement.editTaskFormFields.dueDate.value,
         priority: domElement.editTaskFormFields.priority.value,
-        projectName: domElement.editTaskFormFields.project.value,
+        projectID: domElement.editTaskFormFields.project[
+          domElement.editTaskFormFields.project.selectedIndex
+        ].getAttribute('data-editTaskTargetProject'),
       },
     ]);
     $('#editTaskModal').modal('hide');
@@ -137,7 +145,7 @@ domElement.newProjectForm.addEventListener('submit', (event) => {
       domElement.newProjectFromFields.name.value.charAt(0).toUpperCase() +
       domElement.newProjectFromFields.name.value.slice(1);
 
-    // display custom invalid message
+    // display custom invalid message when using today or inbox as project name
     document.querySelector(
       '#newProjectModal .invalid-feedback'
     ).textContent = `${capitalizedName} is a reserved project name`;
@@ -156,7 +164,7 @@ domElement.newProjectForm.addEventListener('submit', (event) => {
 // change current displayed project
 domElement.projectsMainList.addEventListener('click', (e) => {
   if (e.target.closest('li[id*="project_"]')) {
-    // hide menu on phone when project licked
+    // auto hide menu on phone when project licked
     if (window.screen.availWidth < 768) {
       document.querySelector('.editor').classList.toggle('toggle');
       domElement.leftMainMenu.classList.toggle('toggle');
@@ -168,11 +176,7 @@ domElement.projectsMainList.addEventListener('click', (e) => {
     );
 
     //remove if already selected and add selected class to clicked node
-    document.querySelector('li.selected')
-      ? document
-          .querySelector('.left_menu li.selected')
-          .classList.remove('selected')
-      : undefined;
+    _removeCurrentSelection();
     e.target.closest('li').classList.toggle('selected');
   }
 });
@@ -181,18 +185,15 @@ domElement.projectsMainList.addEventListener('click', (e) => {
 document.addEventListener('click', (e) => {
   //new task button click
   if (e.target.closest('button[id*="add_btn"]')) {
-    // fill project list in add task form
-    pubSub.publish('newTaskFillProjects', null);
+    // fill project list in add task form and select current displayed project
+    const selectedProject = _getSelectedProjectID() ?? null;
+    pubSub.publish('newTaskFillProjects', selectedProject);
   }
 
   // completed tasks
   if (e.target.closest(`button[id="completedTasks"]`)) {
     //remove current selected project
-    document.querySelector('li.selected')
-      ? document
-          .querySelector('.left_menu li.selected')
-          .classList.remove('selected')
-      : undefined;
+    _removeCurrentSelection();
 
     pubSub.publish('getCompletedTasksToUI', null);
   }
@@ -219,6 +220,7 @@ document.addEventListener('click', (e) => {
     });
   }
 
+  //!------ i have the issue here
   //click change project button
   if (e.target.closest('span[id*="projectPopover"]')) {
     const clickedSpan = e.target.closest('span[id*="projectPopover"]');
@@ -226,6 +228,7 @@ document.addEventListener('click', (e) => {
     pubSub.publish('editProjectPopover', taskID);
   }
 
+  //!------ i have the issue here
   //click popover option to change project
   if (
     e.target.closest('li') &&
@@ -236,7 +239,7 @@ document.addEventListener('click', (e) => {
       .id.substr(e.target.closest('ul').id.indexOf('_'));
     pubSub.publish('changeTaskProject', [
       taskID,
-      e.target.textContent.toLowerCase(),
+      e.target.getAttribute('data-popoverTargetProjectId'),
     ]);
     if (_getSelectedProjectID()) {
       pubSub.publish('displayProjectTasks', _getSelectedProjectID());
@@ -264,7 +267,7 @@ document.addEventListener('click', (e) => {
       e.target.tagName != 'INPUT')
   ) {
     const targetTask = e.target.closest('div[id^="task_"]');
-    // e.target.id.substr(1) to remove the small t in task id and replace it with T
+    // collapseT${targetTask.id.substr(1) to remove the small t in task id and replace it with T
     const target = document.querySelector(
       `#collapseT${targetTask.id.substr(1)}`
     );
@@ -275,6 +278,7 @@ document.addEventListener('click', (e) => {
       $(`#collapseT${targetTask.id.substr(1)}`).collapse('show');
     }
   }
+
   //click project dropdown menu
   if (e.target.closest('li') && e.target.closest('li').id == 'projects') {
     e.target.closest('li').classList.toggle('rotate_arrow');
@@ -296,6 +300,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
+//!--- work on marking the task as done and changing the current project
 //listen for task marked as completed
 document.addEventListener('change', (e) => {
   if (e.target.id.includes('check_') && e.target.checked == true) {
@@ -314,7 +319,6 @@ document.addEventListener('change', (e) => {
 });
 
 //-- had to make the taskQueGlobal to access it from another listener
-//-- its the only global variable
 let taskQueue = [];
 function _queueTaskForCompletion(taskID) {
   if (taskQueue.length > 0) {
@@ -348,11 +352,11 @@ function _createNewTask() {
     domElement.newTaskFormFields.priority.value
   );
 
-  console.log(
-    domElement.newTaskFormFields.project[
-      domElement.newTaskFormFields.project.selectedIndex
-    ].getAttribute('data-newTaskTargetProject')
-  );
+  // console.log(
+  //   domElement.newTaskFormFields.project[
+  //     domElement.newTaskFormFields.project.selectedIndex
+  //   ].getAttribute('data-newTaskTargetProject')
+  // );
 
   pubSub.publish('saveTask', {
     task,

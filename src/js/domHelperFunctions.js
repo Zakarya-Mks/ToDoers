@@ -16,6 +16,7 @@ export class DomHelperFunctions {
     return domElement;
   }
 
+  //!--- change how the task current project is selected from the view module to the list creation
   static creatListItems(
     innerElmArr,
     ulElement,
@@ -24,10 +25,14 @@ export class DomHelperFunctions {
   ) {
     for (let index = 0; index < innerElmArr.length; index++) {
       const listItem = document.createElement('li');
-      listItemClass ? listItem.classList.add(listItemClass) : '';
-      attributes
-        ? listItem.setAttribute(attributes.name, attributes.attrData[index])
-        : '';
+      listItemClass ? listItem.classList.add(listItemClass) : undefined;
+      if (attributes) {
+        listItem.setAttribute(attributes.name, attributes.attrData[index]);
+        listItem.getAttribute('data-popoverTargetProjectId') ==
+        attributes.selectedPID
+          ? listItem.classList.add('selected')
+          : undefined;
+      }
 
       if (Array.isArray(innerElmArr[index])) {
         innerElmArr[index].forEach((element) => {

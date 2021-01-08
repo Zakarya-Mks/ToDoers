@@ -43,10 +43,10 @@ function displayAllTasks(allTasksArr) {
 function displayCompletedTasks(completedTasksArr) {
   domElement.editorContent.innerHTML = '';
 
-  for (let index = completedTasksArr.length - 1; index >= 0; index--) {
-    const taskCard = _displayCompletedTask(completedTasksArr[index]);
+  completedTasksArr.forEach((completedTask) => {
+    const taskCard = _displayCompletedTask(completedTask);
     domElement.editorContent.append(taskCard);
-  }
+  });
 }
 
 function _displayCompletedTask({ project, task, 'completed-on': completedOn }) {
@@ -172,6 +172,7 @@ function _displayCompletedTask({ project, task, 'completed-on': completedOn }) {
   return taskDetails;
 }
 
+//! add project id instead of project name
 function displayTaskEditModal(task) {
   if (task) {
     document.querySelector('#oldtaskTitle').value = task.title;
@@ -186,29 +187,36 @@ function displayTaskEditModal(task) {
   }
 }
 
-function fillNewTaskPrjLst(projectsArr) {
+//!--- updated this to work with project id instead of project name
+function fillNewTaskPrjLst({ projectArr, selectedProjectID }) {
   domElement.newTaskFormFields.project.innerHTML = '';
-  projectsArr.forEach((project) => {
+  projectArr.forEach((project) => {
     if (project.name != 'today') {
       const option = document.createElement('option');
       option.textContent = project.name;
       option.setAttribute('data-newTaskTargetProject', project.id);
+
+      // select task current displayed project
+      project.id == selectedProjectID ? (option.selected = true) : undefined;
       domElement.newTaskFormFields.project.append(option);
     }
   });
 }
 
-function fillEditTaskPrjLst([projectsArr, selectedProject]) {
+//!--- updated this to work with project id instead of project name
+function fillEditTaskPrjLst([projectsArr, selectedProjectID]) {
   domElement.editTaskFormFields.project.innerHTML = '';
   projectsArr.forEach((project) => {
     if (project.name != 'today') {
       const option = document.createElement('option');
       option.textContent = project.name;
+      option.setAttribute('data-editTaskTargetProject', project.id);
+
+      // select task project
+      project.id == selectedProjectID ? (option.selected = true) : undefined;
       domElement.editTaskFormFields.project.append(option);
     }
   });
-
-  domElement.editTaskFormFields.project.value = selectedProject;
 }
 
 function removeTaskFromUi(taskID) {
@@ -347,26 +355,23 @@ function fillProjectPopoverWithData([projectsInfoArr, taskID, taskProjectID]) {
   });
 }
 
+//!---- i hade the issue here
 function _getProjectsList(projectInfos, taskID, selectedPID) {
   const ul = domHelpers.createElementWithClass('ul', ['pl-0', 'mb-0', 'pr-2']);
   ul.id = `changeProjectPopover${taskID}`;
 
-  const resultArr = projectInfos.filter((project) => project.name != 'today');
-  const namesArr = resultArr.map((projectObj) => projectObj.name);
-  const idsArr = resultArr.map((projectObj) => projectObj.id);
+  const namesArr = projectInfos.map((projectObj) => projectObj.name);
+  const idsArr = projectInfos.map((projectObj) => projectObj.id);
   domHelpers.creatListItems(namesArr, ul, 'my-1', {
     name: 'data-popoverTargetProjectId',
     attrData: idsArr,
-  });
-  [...ul.children].forEach((li) => {
-    if (li.getAttribute('data-popoverTargetProjectId') == selectedPID) {
-      li.classList.add('selected');
-    }
+    selectedPID,
   });
 
   return ul;
 }
 
+//!-- and here
 function updateProjectPopoverWithData([
   projectsInfoArr,
   taskID,

@@ -62,6 +62,13 @@ function _parseLSData(dataType) {
   }
 }
 
+//auto add projectArr to local storage if not exist
+(function () {
+  if (localStorage.getItem('allProjects') == null) {
+    _writeToLS('allProjects', projectArr);
+  }
+})();
+
 function completeTask(taskId) {
   const taskProjectCombo = {};
 
@@ -91,37 +98,59 @@ function saveTaskToLS({ task, projectID }) {
   tasksArr.push(task);
   _writeToLS('allTasks', tasksArr);
 
-  //add taskId to appropriate project tasksList
-
-  projectArr.forEach((project) => {
-    if (project.id == projectID) {
-      project.projectTasks = task.id;
-    }
-  });
-
+  //!--- this was at the bottom
   //update todays tasks
   const todaysTasksIDs = _getTodaysTasks().map((task) => {
     return task.id;
   });
 
-  for (let index = 0; index < projectArr.length; index++) {
+  //!-- combined two loops in one
+  //add taskId to appropriate project tasksList
+  projectArr.forEach((project, index) => {
+    if (project.id == projectID) {
+      project.projectTasks = task.id;
+    }
+
     // add all new todays task
-    if (projectArr[index].name == 'today') {
+    if (project.name == 'today') {
       todaysTasksIDs.forEach((taskID) => {
-        if (!projectArr[index].projectTasks.includes(taskID)) {
-          projectArr[index].projectTasks = taskID;
+        if (!project.projectTasks.includes(taskID)) {
+          project.projectTasks = taskID;
         }
       });
 
       //remove all yesterdays tasks
-      projectArr[index].projectTasks.forEach((taskID) => {
+      project.projectTasks.forEach((taskID) => {
         if (!todaysTasksIDs.includes(taskID)) {
-          projectArr[index].projectTasks.splice(index, 1);
+          project.projectTasks.splice(index, 1);
         }
       });
-      break;
     }
-  }
+  });
+
+  // //update todays tasks
+  // const todaysTasksIDs = _getTodaysTasks().map((task) => {
+  //   return task.id;
+  // });
+
+  // for (let index = 0; index < projectArr.length; index++) {
+  //   // add all new todays task
+  //   if (projectArr[index].name == 'today') {
+  //     todaysTasksIDs.forEach((taskID) => {
+  //       if (!projectArr[index].projectTasks.includes(taskID)) {
+  //         projectArr[index].projectTasks = taskID;
+  //       }
+  //     });
+
+  //     //remove all yesterdays tasks
+  //     projectArr[index].projectTasks.forEach((taskID) => {
+  //       if (!todaysTasksIDs.includes(taskID)) {
+  //         projectArr[index].projectTasks.splice(index, 1);
+  //       }
+  //     });
+  //     break;
+  //   }
+  // }
 
   _writeToLS('allProjects', projectArr);
 }
@@ -148,6 +177,7 @@ function getProjectTasks(projectID) {
   pubSub.publish('UpdateEditorTitle', target[0].name);
 }
 
+//!---edited this to work with project id instead of project name
 function updateTask([taskID, taskObj]) {
   tasksArr.forEach((task) => {
     if (task.id == taskID) {
@@ -159,22 +189,23 @@ function updateTask([taskID, taskObj]) {
   });
 
   //remove task from old project and add it to new project
-  editTaskProject([taskID, taskObj.projectName]);
+  editTaskProject([taskID, taskObj.projectID]);
   _writeToLS('allTasks', tasksArr);
 }
 
-function editTaskProject([taskID, newProjectName]) {
-  newProjectName = newProjectName.toLowerCase();
+//! ********** done editing this ************************************************
+//! --- edit this function to use project id instead of project name
+function editTaskProject([taskID, newProjectID]) {
   projectArr.forEach((project) => {
     if (
       project.projectTasks.includes(taskID) &&
-      project.name != newProjectName &&
+      project.id != newProjectID &&
       project.name != 'today'
     ) {
       project.projectTasks.splice(project.projectTasks.indexOf(taskID), 1);
     } else if (
       !project.projectTasks.includes(taskID) &&
-      project.name == newProjectName
+      project.id == newProjectID
     ) {
       project.projectTasks.push(taskID);
     }
@@ -183,36 +214,37 @@ function editTaskProject([taskID, newProjectName]) {
 }
 
 function getDataToProjectPopover(taskID) {
-  const taskProjectID = projectArr.filter((project) => {
-    if (project.name != 'today') {
-      return project;
-    }
-  });
-  const projectsInfoArr = projectArr.map((project) => {
-    return { id: project.id, name: project.name };
-  });
+  const { taskProjectID, projectsInfoArr } = _getPopoverData(taskID);
 
   pubSub.publish('projectPopoverData', [
     projectsInfoArr,
     taskID,
-    taskProjectID[0].id,
+    taskProjectID,
   ]);
 }
 
-function getProjectsToProjectPopover(taskID) {
-  const taskProjectID = projectArr.filter((project) => {
-    if (project.projectTasks.includes(taskID) && project.name != 'today') {
-      return project;
+function _getPopoverData(taskID) {
+  let taskProjectID;
+  const projectsInfoArr = [];
+  projectArr.forEach((project) => {
+    if (project.name != 'today') {
+      if (project.projectTasks.includes(taskID)) {
+        taskProjectID = project.id;
+      }
+
+      projectsInfoArr.push(project);
     }
   });
-  const projectsInfoArr = projectArr.map((project) => {
-    return { id: project.id, name: project.name };
-  });
 
+  return { taskProjectID, projectsInfoArr };
+}
+
+function getProjectsToProjectPopover(taskID) {
+  const { taskProjectID, projectsInfoArr } = _getPopoverData(taskID);
   pubSub.publish('updateProjectPopoverData', [
     projectsInfoArr,
     taskID,
-    taskProjectID[0].id,
+    taskProjectID,
   ]);
 }
 
@@ -232,6 +264,7 @@ function _getTodaysTasks() {
   return resultArr;
 }
 
+// get inbox and today project ids to use on the ui left menu
 function getProjectsIds([inboxDomEl, todayDomEl]) {
   projectArr.forEach((project) => {
     if (project.name == 'inbox') {
@@ -251,12 +284,19 @@ function updatePriority(clickedPriority_obj) {
   _writeToLS('allTasks', tasksArr);
 }
 
+//!--- use for instead of forEach to beak from the loop
 function removeTaskFromLS(taskID) {
-  tasksArr.forEach((task, index) => {
-    if (task.id == taskID) {
+  for (let index = 0; index < tasksArr.length; index++) {
+    if (tasksArr[index].id == taskID) {
       tasksArr.splice(index, 1);
+      break;
     }
-  });
+  }
+  // tasksArr.forEach((task, index) => {
+  //   if (task.id == taskID) {
+  //     tasksArr.splice(index, 1);
+  //   }
+  // });
 
   projectArr.forEach((project) => {
     if (project.projectTasks.includes(taskID)) {
@@ -286,18 +326,18 @@ function getAllCompletedTaskToUI() {
 }
 
 //fill project list in the new task modal
-function newTaskFillProjects() {
-  pubSub.publish('fillNewTaskPrjLst', projectArr);
+function newTaskFillProjects(selectedProjectID) {
+  pubSub.publish('fillNewTaskPrjLst', { projectArr, selectedProjectID });
 }
 
+//!---- updated this to use project id instead of project name
 // fill project list in the edit task modal
 function editTaskFromFillPrjLst(taskID) {
   const project = projectArr.filter((project) =>
     project.projectTasks.includes(taskID)
   );
 
-  const selectedProject = project[0].name;
-  pubSub.publish('fillEditTaskPrjLst', [projectArr, selectedProject]);
+  pubSub.publish('fillEditTaskPrjLst', [projectArr, project[0].id]);
 }
 
 // write and read from Local Storage
@@ -307,10 +347,3 @@ function _writeToLS(name, dataToWrite) {
 function _readFromLS(name) {
   return JSON.parse(localStorage.getItem(name));
 }
-
-//auto add projectArr to local storage if not exist
-(function () {
-  if (localStorage.getItem('allProjects') == null) {
-    _writeToLS('allProjects', projectArr);
-  }
-})();
