@@ -16,7 +16,6 @@ export class DomHelperFunctions {
     return domElement;
   }
 
-  //!--- change how the task current project is selected from the view module to the list creation
   static creatListItems(
     innerElmArr,
     ulElement,

@@ -98,13 +98,11 @@ function saveTaskToLS({ task, projectID }) {
   tasksArr.push(task);
   _writeToLS('allTasks', tasksArr);
 
-  //!--- this was at the bottom
   //update todays tasks
   const todaysTasksIDs = _getTodaysTasks().map((task) => {
     return task.id;
   });
 
-  //!-- combined two loops in one
   //add taskId to appropriate project tasksList
   projectArr.forEach((project, index) => {
     if (project.id == projectID) {
@@ -127,30 +125,6 @@ function saveTaskToLS({ task, projectID }) {
       });
     }
   });
-
-  // //update todays tasks
-  // const todaysTasksIDs = _getTodaysTasks().map((task) => {
-  //   return task.id;
-  // });
-
-  // for (let index = 0; index < projectArr.length; index++) {
-  //   // add all new todays task
-  //   if (projectArr[index].name == 'today') {
-  //     todaysTasksIDs.forEach((taskID) => {
-  //       if (!projectArr[index].projectTasks.includes(taskID)) {
-  //         projectArr[index].projectTasks = taskID;
-  //       }
-  //     });
-
-  //     //remove all yesterdays tasks
-  //     projectArr[index].projectTasks.forEach((taskID) => {
-  //       if (!todaysTasksIDs.includes(taskID)) {
-  //         projectArr[index].projectTasks.splice(index, 1);
-  //       }
-  //     });
-  //     break;
-  //   }
-  // }
 
   _writeToLS('allProjects', projectArr);
 }
@@ -177,7 +151,6 @@ function getProjectTasks(projectID) {
   pubSub.publish('UpdateEditorTitle', target[0].name);
 }
 
-//!---edited this to work with project id instead of project name
 function updateTask([taskID, taskObj]) {
   tasksArr.forEach((task) => {
     if (task.id == taskID) {
@@ -193,8 +166,6 @@ function updateTask([taskID, taskObj]) {
   _writeToLS('allTasks', tasksArr);
 }
 
-//! ********** done editing this ************************************************
-//! --- edit this function to use project id instead of project name
 function editTaskProject([taskID, newProjectID]) {
   projectArr.forEach((project) => {
     if (
@@ -284,7 +255,6 @@ function updatePriority(clickedPriority_obj) {
   _writeToLS('allTasks', tasksArr);
 }
 
-//!--- use for instead of forEach to beak from the loop
 function removeTaskFromLS(taskID) {
   for (let index = 0; index < tasksArr.length; index++) {
     if (tasksArr[index].id == taskID) {
@@ -292,11 +262,6 @@ function removeTaskFromLS(taskID) {
       break;
     }
   }
-  // tasksArr.forEach((task, index) => {
-  //   if (task.id == taskID) {
-  //     tasksArr.splice(index, 1);
-  //   }
-  // });
 
   projectArr.forEach((project) => {
     if (project.projectTasks.includes(taskID)) {
@@ -330,7 +295,6 @@ function newTaskFillProjects(selectedProjectID) {
   pubSub.publish('fillNewTaskPrjLst', { projectArr, selectedProjectID });
 }
 
-//!---- updated this to use project id instead of project name
 // fill project list in the edit task modal
 function editTaskFromFillPrjLst(taskID) {
   const project = projectArr.filter((project) =>

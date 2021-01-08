@@ -172,7 +172,6 @@ function _displayCompletedTask({ project, task, 'completed-on': completedOn }) {
   return taskDetails;
 }
 
-//! add project id instead of project name
 function displayTaskEditModal(task) {
   if (task) {
     document.querySelector('#oldtaskTitle').value = task.title;
@@ -187,7 +186,6 @@ function displayTaskEditModal(task) {
   }
 }
 
-//!--- updated this to work with project id instead of project name
 function fillNewTaskPrjLst({ projectArr, selectedProjectID }) {
   domElement.newTaskFormFields.project.innerHTML = '';
   projectArr.forEach((project) => {
@@ -203,7 +201,6 @@ function fillNewTaskPrjLst({ projectArr, selectedProjectID }) {
   });
 }
 
-//!--- updated this to work with project id instead of project name
 function fillEditTaskPrjLst([projectsArr, selectedProjectID]) {
   domElement.editTaskFormFields.project.innerHTML = '';
   projectsArr.forEach((project) => {
@@ -355,7 +352,6 @@ function fillProjectPopoverWithData([projectsInfoArr, taskID, taskProjectID]) {
   });
 }
 
-//!---- i hade the issue here
 function _getProjectsList(projectInfos, taskID, selectedPID) {
   const ul = domHelpers.createElementWithClass('ul', ['pl-0', 'mb-0', 'pr-2']);
   ul.id = `changeProjectPopover${taskID}`;
@@ -371,7 +367,6 @@ function _getProjectsList(projectInfos, taskID, selectedPID) {
   return ul;
 }
 
-//!-- and here
 function updateProjectPopoverWithData([
   projectsInfoArr,
   taskID,
@@ -433,7 +428,6 @@ function _creatToast(taskID) {
 }
 
 //helper Function To Creat a task dom element
-
 const _creatTaskNode = function (task) {
   const taskWrapper = document.createElement('div');
 

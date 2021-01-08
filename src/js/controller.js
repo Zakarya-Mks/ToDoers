@@ -90,7 +90,6 @@ domElement.newTaskForm.addEventListener('submit', (event) => {
   }
 });
 
-//!-- updated this to work with the project id instead of project name thing
 //update task
 domElement.editTaskForm.addEventListener('submit', (event) => {
   //bootstrap validation first then publish new event
@@ -220,7 +219,6 @@ document.addEventListener('click', (e) => {
     });
   }
 
-  //!------ i have the issue here
   //click change project button
   if (e.target.closest('span[id*="projectPopover"]')) {
     const clickedSpan = e.target.closest('span[id*="projectPopover"]');
@@ -228,7 +226,6 @@ document.addEventListener('click', (e) => {
     pubSub.publish('editProjectPopover', taskID);
   }
 
-  //!------ i have the issue here
   //click popover option to change project
   if (
     e.target.closest('li') &&
@@ -371,7 +368,9 @@ function _createNewTask() {
 }
 
 function _createProject() {
-  const project = new Project(domElement.newProjectFromFields.name.value);
+  const project = new Project(
+    domElement.newProjectFromFields.name.value.toLowerCase()
+  );
 
   pubSub.publish('saveProject', project);
   pubSub.publish('displayProject', project);
