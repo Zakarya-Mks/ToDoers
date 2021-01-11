@@ -19,4 +19,4 @@ You can use it to manage your tasks from a smartphone, tablet, or computer.
 
 ----------------------------------------------------------------------------
 
-<img src="https://user-images.githubusercontent.com/59210574/103798151-9ce4b100-5049-11eb-876b-1496185e2cc7.png" width="731" height="411">
+<img src="https://user-images.githubusercontent.com/59210574/103798151-9ce4b100-5049-11eb-876b-1496185e2cc7.png">
